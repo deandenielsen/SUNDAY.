@@ -336,11 +336,127 @@
     .modal-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
 
     @media (max-width: 640px) {
-      #bottom-nav { padding: 0 1rem; }
-      .nav-links { gap: 0; }
-      .nav-link { font-size: 0.7rem; padding: 0.3rem 0.55rem; }
-      .nav-icon { display: none; }
-      .nav-cta { font-size: 0.7rem; padding: 0.38rem 0.85rem; }
+      /* Hide desktop nav items on mobile */
+      #bottom-nav { padding: 0 1.25rem; }
+      .nav-links { display: none; }
+      .nav-right { display: none; }
+      /* Show hamburger button */
+      #hamburger-btn { display: flex; }
+    }
+
+    /* Hamburger button — hidden on desktop */
+    #hamburger-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+    #hamburger-btn:hover { background: rgba(255,255,255,0.14); }
+    #hamburger-btn svg { transition: opacity 0.2s; }
+
+    /* ── MOBILE SLIDE-UP PANEL ── */
+    #mobile-menu {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 998;
+      padding: 0 16px 100px; /* 100px clears the sticky nav */
+      transform: translateY(100%);
+      transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
+      pointer-events: none;
+    }
+    #mobile-menu.open {
+      transform: translateY(0);
+      pointer-events: all;
+    }
+    .mobile-menu-inner {
+      background: rgba(14,14,14,0.92);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 1.5rem 1.5rem 1.75rem;
+      box-shadow: 0 -8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07);
+    }
+    /* Drag handle */
+    .menu-handle {
+      width: 36px;
+      height: 4px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 2px;
+      margin: 0 auto 1.5rem;
+    }
+    /* Mobile nav links */
+    .mobile-nav-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      text-decoration: none;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.9rem;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.5);
+      transition: color 0.2s;
+    }
+    .mobile-nav-link:last-of-type { border-bottom: none; }
+    .mobile-nav-link:hover, .mobile-nav-link.active { color: #fff; }
+    .mobile-nav-link .arrow { font-size: 1rem; opacity: 0.3; transition: opacity 0.2s, transform 0.2s; }
+    .mobile-nav-link:hover .arrow { opacity: 0.8; transform: translateX(4px); }
+    /* Mobile bottom row */
+    .mobile-menu-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .mobile-social-icons {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .mobile-social-icons a {
+      color: rgba(255,255,255,0.4);
+      transition: color 0.2s;
+    }
+    .mobile-social-icons a:hover { color: rgba(255,255,255,0.9); }
+    .mobile-cta {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #0a0a0a;
+      background: #fff;
+      border: none;
+      border-radius: 100px;
+      padding: 0.5rem 1.2rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .mobile-cta:hover { background: #8BAC7A; color: #fff; }
+
+    /* Backdrop for mobile menu */
+    #mobile-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 997;
+      background: rgba(0,0,0,0);
+      pointer-events: none;
+      transition: background 0.3s;
+    }
+    #mobile-backdrop.open {
+      background: rgba(0,0,0,0.4);
+      pointer-events: all;
     }
   </style>
 </head>
@@ -628,7 +744,7 @@
   <!-- Logo -->
   <span class="nav-logo-text">SUNDAY.</span>
 
-  <!-- Centre links -->
+  <!-- Centre links (desktop) -->
   <div class="nav-links">
     <a href="#the-story"   class="nav-link" data-section="the-story">The Story</a>
     <a href="#the-event"   class="nav-link" data-section="the-event">The Event</a>
@@ -671,7 +787,57 @@
     <!-- CTA -->
     <button class="nav-cta" onclick="openModal()">Let's Talk</button>
   </div>
+
+  <!-- Hamburger (mobile only) -->
+  <button id="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Open menu" aria-expanded="false">
+    <svg id="icon-burger" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+      <line x1="3" y1="6"  x2="21" y2="6"/>
+      <line x1="3" y1="12" x2="21" y2="12"/>
+      <line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+    <svg id="icon-close" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" style="display:none;">
+      <line x1="18" y1="6" x2="6" y2="18"/>
+      <line x1="6"  y1="6" x2="18" y2="18"/>
+    </svg>
+  </button>
 </nav>
+
+<!-- ═══════════════════════════════════════
+     MOBILE BACKDROP
+═══════════════════════════════════════ -->
+<div id="mobile-backdrop" onclick="closeMobileMenu()"></div>
+
+<!-- ═══════════════════════════════════════
+     MOBILE SLIDE-UP MENU
+═══════════════════════════════════════ -->
+<div id="mobile-menu" role="navigation" aria-label="Mobile navigation">
+  <div class="mobile-menu-inner">
+    <div class="menu-handle"></div>
+
+    <a href="#the-story"   class="mobile-nav-link" data-section="the-story"   onclick="closeMobileMenu()">The Story   <span class="arrow">→</span></a>
+    <a href="#the-event"   class="mobile-nav-link" data-section="the-event"   onclick="closeMobileMenu()">The Event   <span class="arrow">→</span></a>
+    <a href="#the-venue"   class="mobile-nav-link" data-section="the-venue"   onclick="closeMobileMenu()">The Venue   <span class="arrow">→</span></a>
+    <a href="#the-artists" class="mobile-nav-link" data-section="the-artists" onclick="closeMobileMenu()">The Artists <span class="arrow">→</span></a>
+
+    <div class="mobile-menu-footer">
+      <div class="mobile-social-icons">
+        <a href="#" aria-label="Instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="#" aria-label="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.95C5.12 20 12 20 12 20s6.88 0 8.59-.47a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="#" aria-label="Facebook">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="#" aria-label="TikTok">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.74a4.85 4.85 0 0 1-1.01-.05z"/></svg>
+        </a>
+      </div>
+      <button class="mobile-cta" onclick="closeMobileMenu(); openModal();">Let's Talk</button>
+    </div>
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════════
      CONTACT MODAL
@@ -744,6 +910,51 @@
       e.preventDefault();
       window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - 30, behavior: 'smooth' });
     });
+  });
+
+  // ── Mobile slide-up menu ──
+  const mobileMenu     = document.getElementById('mobile-menu');
+  const mobileBackdrop = document.getElementById('mobile-backdrop');
+  const hamburgerBtn   = document.getElementById('hamburger-btn');
+  const iconBurger     = document.getElementById('icon-burger');
+  const iconClose      = document.getElementById('icon-close');
+  let mobileOpen = false;
+
+  function toggleMobileMenu() {
+    mobileOpen ? closeMobileMenu() : openMobileMenu();
+  }
+
+  function openMobileMenu() {
+    mobileOpen = true;
+    mobileMenu.classList.add('open');
+    mobileBackdrop.classList.add('open');
+    hamburgerBtn.setAttribute('aria-expanded', 'true');
+    iconBurger.style.display = 'none';
+    iconClose.style.display  = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMobileMenu() {
+    mobileOpen = false;
+    mobileMenu.classList.remove('open');
+    mobileBackdrop.classList.remove('open');
+    hamburgerBtn.setAttribute('aria-expanded', 'false');
+    iconBurger.style.display = 'block';
+    iconClose.style.display  = 'none';
+    document.body.style.overflow = '';
+  }
+
+  // Sync active state to mobile links too
+  const allNavLinks = document.querySelectorAll('.nav-link, .mobile-nav-link');
+  const setActiveAll = (id) => {
+    allNavLinks.forEach(link => link.classList.toggle('active', link.dataset.section === id));
+  };
+  const mobileSecObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if (entry.isIntersecting) setActiveAll(entry.target.id); });
+  }, { threshold: 0.35 });
+  ['the-story','the-event','the-venue','the-artists'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) mobileSecObserver.observe(el);
   });
 
   // ── Contact modal ──
