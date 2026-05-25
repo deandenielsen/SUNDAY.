@@ -215,6 +215,126 @@
     }
     .nav-cta:hover { background: #8BAC7A; color: #fff; }
 
+    /* ── CONTACT MODAL ── */
+    #contact-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    #contact-modal.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .modal-box {
+      position: relative;
+      z-index: 10;
+      background: rgba(18,18,18,0.95);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+      transform: translateY(20px);
+      transition: transform 0.35s ease;
+    }
+    #contact-modal.open .modal-box {
+      transform: translateY(0);
+    }
+    .modal-box h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem;
+      letter-spacing: 0.05em;
+      color: #fff;
+      margin-bottom: 0.35rem;
+    }
+    .modal-box p.modal-sub {
+      font-size: 0.82rem;
+      color: #666;
+      margin-bottom: 2rem;
+      font-weight: 300;
+    }
+    .modal-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+    .modal-field label {
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      color: #666;
+      text-transform: uppercase;
+      font-weight: 400;
+    }
+    .modal-field input,
+    .modal-field textarea {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 300;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+      resize: none;
+    }
+    .modal-field input::placeholder,
+    .modal-field textarea::placeholder { color: #444; }
+    .modal-field input:focus,
+    .modal-field textarea:focus { border-color: rgba(139,172,122,0.6); }
+    .modal-submit {
+      width: 100%;
+      background: #fff;
+      color: #0a0a0a;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      padding: 0.85rem 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: background 0.2s, color 0.2s;
+    }
+    .modal-submit:hover { background: #8BAC7A; color: #fff; }
+    .modal-close {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      background: rgba(255,255,255,0.07);
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #888;
+      font-size: 1rem;
+      transition: background 0.2s, color 0.2s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
     @media (max-width: 640px) {
       #bottom-nav { padding: 0 1rem; }
       .nav-links { gap: 0; }
@@ -506,7 +626,7 @@
 <nav id="bottom-nav" role="navigation" aria-label="Main navigation">
 
   <!-- Logo -->
-  <span class="nav-logo-text">MIOAZ.</span>
+  <span class="nav-logo-text">SUNDAY.</span>
 
   <!-- Centre links -->
   <div class="nav-links">
@@ -549,9 +669,43 @@
     </a>
 
     <!-- CTA -->
-    <button class="nav-cta">Let's Talk</button>
+    <button class="nav-cta" onclick="openModal()">Let's Talk</button>
   </div>
 </nav>
+
+<!-- ═══════════════════════════════════════
+     CONTACT MODAL
+═══════════════════════════════════════ -->
+<div id="contact-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-backdrop" onclick="closeModal()"></div>
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
+    <h3 id="modal-title">Let's Talk.</h3>
+    <p class="modal-sub">Drop us a message and we'll get back to you before the next Sunday.</p>
+    <form action="https://formsubmit.co/dean@dndesign.co.za" method="POST" onsubmit="handleSubmit(event)">
+      <input type="hidden" name="_subject" value="MIOAZ SUNDAY — New Enquiry" />
+      <input type="hidden" name="_captcha" value="false" />
+      <input type="hidden" name="_template" value="table" />
+      <input type="text" name="_honey" style="display:none" />
+      <div class="modal-field">
+        <label for="contact-name">Name</label>
+        <input id="contact-name" type="text" name="name" placeholder="Your name" required />
+      </div>
+      <div class="modal-field">
+        <label for="contact-email">Email</label>
+        <input id="contact-email" type="email" name="email" placeholder="your@email.com" required />
+      </div>
+      <div class="modal-field">
+        <label for="contact-msg">Message</label>
+        <textarea id="contact-msg" name="message" rows="4" placeholder="What's on your mind?" required></textarea>
+      </div>
+      <button type="submit" class="modal-submit" id="submit-btn">Send Message</button>
+      <p id="form-success" style="display:none; text-align:center; font-size:0.82rem; color:#8BAC7A; margin-top:1rem; font-weight:400;">
+        ✓ Message sent — we'll be in touch soon.
+      </p>
+    </form>
+  </div>
+</div>
 
 <script>
   // ── Scroll fade-ins ──
@@ -566,19 +720,15 @@
   document.querySelectorAll('.fade-up').forEach(el => fadeObserver.observe(el));
 
   // ── Active nav link on scroll ──
-  const sections   = ['the-story', 'the-event', 'the-venue', 'the-artists'];
-  const navLinks   = document.querySelectorAll('.nav-link');
+  const sections = ['the-story', 'the-event', 'the-venue', 'the-artists'];
+  const navLinks = document.querySelectorAll('.nav-link');
 
   const setActive = (id) => {
-    navLinks.forEach(link => {
-      link.classList.toggle('active', link.dataset.section === id);
-    });
+    navLinks.forEach(link => link.classList.toggle('active', link.dataset.section === id));
   };
 
   const sectionObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) setActive(entry.target.id);
-    });
+    entries.forEach(entry => { if (entry.isIntersecting) setActive(entry.target.id); });
   }, { threshold: 0.35 });
 
   sections.forEach(id => {
@@ -586,16 +736,42 @@
     if (el) sectionObserver.observe(el);
   });
 
-  // ── Smooth scroll offset (accounts for sticky nav height) ──
+  // ── Smooth scroll offset ──
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', e => {
       const target = document.querySelector(anchor.getAttribute('href'));
       if (!target) return;
       e.preventDefault();
-      const offset = target.getBoundingClientRect().top + window.scrollY - 30;
-      window.scrollTo({ top: offset, behavior: 'smooth' });
+      window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - 30, behavior: 'smooth' });
     });
   });
+
+  // ── Contact modal ──
+  const modal = document.getElementById('contact-modal');
+
+  function openModal() {
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  function handleSubmit(e) {
+    const btn = document.getElementById('submit-btn');
+    const success = document.getElementById('form-success');
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.style.display = 'none';
+      success.style.display = 'block';
+      setTimeout(closeModal, 2200);
+    }, 1000);
+  }
 </script>
 
 </body>
