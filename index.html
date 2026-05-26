@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.youtube.com/iframe_api"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -28,11 +27,6 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { background: #0a0a0a; color: #fff; font-family: 'Outfit', sans-serif; overflow-x: hidden; padding-bottom: 90px; }
-
-    /* ── YouTube hero background ── */
-    #yt-bg { z-index: 0; }
-    #yt-player-wrap iframe,
-    #yt-player { width: 100% !important; height: 100% !important; }
 
     .section-label {
       font-size: 0.6rem;
@@ -473,12 +467,11 @@
 ═══════════════════════════════════════ -->
 <section style="height: 100vh; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
 
-  <!-- YouTube video background -->
-  <div id="yt-bg" style="position:absolute;inset:0;overflow:hidden;background:#000;">
-    <div id="yt-player-wrap" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh;">
-      <div id="yt-player"></div>
-    </div>
-  </div>
+  <!-- Hero video background -->
+  <video autoplay muted loop playsinline
+    style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none;">
+    <source src="hero.mp4" type="video/mp4">
+  </video>
   <!-- Gradient overlay — darker at top + bottom, lighter in center -->
   <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.45) 40%, rgba(0,0,0,0.7) 100%);"></div>
 
@@ -884,55 +877,7 @@
 </div>
 
 <script>
-  // ── YouTube hero background (19:35–20:05 loop) ──
-  var ytPlayer, loopTimer;
-  var START_SEC = 1175; // 19:35
-  var END_SEC   = 1205; // 20:05
-
-  window.onYouTubeIframeAPIReady = function() {
-    ytPlayer = new YT.Player('yt-player', {
-      videoId: '5pJK0bmEn6Q',
-      width: '100%',
-      height: '100%',
-      playerVars: {
-        autoplay:        1,
-        mute:            1,
-        controls:        0,
-        disablekb:       1,
-        fs:              0,
-        iv_load_policy:  3,
-        modestbranding:  1,
-        rel:             0,
-        showinfo:        0,
-        start:           START_SEC,
-        playsinline:     1,
-      },
-      events: {
-        onReady: function(e) {
-          e.target.mute();
-          e.target.playVideo();
-        },
-        onStateChange: function(e) {
-          if (e.data === YT.PlayerState.PLAYING) {
-            clearInterval(loopTimer);
-            loopTimer = setInterval(function() {
-              if (!ytPlayer || !ytPlayer.getCurrentTime) return;
-              if (ytPlayer.getCurrentTime() >= END_SEC) {
-                ytPlayer.seekTo(START_SEC, true);
-              }
-            }, 250);
-          }
-          // Restart if video ends or is paused unexpectedly
-          if (e.data === YT.PlayerState.ENDED || e.data === YT.PlayerState.PAUSED) {
-            ytPlayer.seekTo(START_SEC, true);
-            ytPlayer.playVideo();
-          }
-        }
-      }
-    });
-  };
-
-  // Scroll fade-ins ──
+  // ── Scroll fade-ins ──
   const fadeObserver = new IntersectionObserver((entries) => {
     entries.forEach(el => {
       if (el.isIntersecting) {
